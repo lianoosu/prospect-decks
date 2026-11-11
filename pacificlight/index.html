@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta name="robots" content="noindex, nofollow">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="snowflake-source" content="cortex-agent-authored" />
+<title>PacificLight × Snowflake — Use Cases by Business Function</title>
+<script type="application/json" id="snowflake-report-metadata">
+{
+  "generated": "2026-10-15",
+  "intent": "Follow-up pack for PacificLight Singapore (Dennis, Sr Mgr System Applications). Audience: business heads. Live Snowflake customer stories mapped to Gen & O&M, Portfolio, Retail & Renewables, plus cross-industry parallels, with architecture flows, OT/CII security pattern, Marketplace data.",
+  "dataSources": [{ "type": "notes", "description": "Discovery call notes; Snowflake for Energy Providers deck (EDF, Expand Energy, Romande Energie); public Snowflake customer stories (Devon Energy, Siemens Energy, Zurich, IMCD, Mandai Wildlife Group); Holistics partner case study (Flo Energy). No Snowflake data queried." }],
+  "sections": [
+    { "id": "intro", "title": "Cover" },
+    { "id": "platform", "title": "Target platform architecture" },
+    { "id": "gen", "title": "Power Generation & O&M" },
+    { "id": "portfolio", "title": "Portfolio & Hedging" },
+    { "id": "retail", "title": "Retail & Renewables" },
+    { "id": "parallels", "title": "Proven in other industries" },
+    { "id": "otsec", "title": "OT / CII security pattern" },
+    { "id": "marketplace", "title": "Marketplace data" },
+    { "id": "next", "title": "Next steps / POC path" }
+  ],
+  "producerNotes": "Named customers come from public Snowflake customer stories. Flo Energy (Holistics) and Petrol (In516ht) are from published partner case studies. Result figures are as published."
+}
+</script>
+<style>
+:root{color-scheme:light dark;
+ --sf:#29B5E8;--sf2:#11567F;--acc:#FF9F36;--ok:#2ea44f;
+ --bg:light-dark(#f7fafc,#0b1220);--card:light-dark(#ffffff,#121a2b);--line:light-dark(#dde5ee,#25324a);
+ --tx:light-dark(#1b2636,#e4ebf5);--mut:light-dark(#5a6b80,#97a6bd);--soft:light-dark(#eaf6fc,#13283a)}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-snap-type:y proximity}
+body{margin:0;font-family:-apple-system,system-ui,"Segoe UI",sans-serif;background:var(--bg);color:var(--tx);line-height:1.5}
+img,svg{max-width:100%;height:auto}
+a{color:var(--sf)}
+nav.top{position:sticky;top:0;z-index:20;display:flex;gap:4px;align-items:center;flex-wrap:wrap;padding:8px clamp(10px,3vw,24px);
+ background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+nav.top .brand{font-weight:700;margin-right:auto;font-size:14px}
+nav.top .brand b{color:var(--sf)}
+nav.top button{font:inherit;font-size:13px;border:1px solid transparent;background:none;color:var(--mut);padding:5px 10px;border-radius:999px;cursor:pointer}
+nav.top button.on{background:var(--sf);color:#fff}
+nav.top button:hover:not(.on){border-color:var(--line);color:var(--tx)}
+.prog{position:fixed;top:0;left:0;height:3px;background:var(--sf);z-index:30;width:0}
+section.slide{min-height:100vh;scroll-snap-align:start;padding:clamp(28px,6vh,64px) clamp(16px,4vw,48px);display:flex;flex-direction:column;justify-content:center}
+.wrap{max-width:1120px;width:100%;margin:0 auto}
+.kicker{text-transform:uppercase;letter-spacing:.12em;font-size:12px;color:var(--sf);font-weight:700}
+h1{font-size:clamp(30px,5vw,54px);line-height:1.1;margin:.2em 0}
+h2{font-size:clamp(24px,3.4vw,36px);margin:.2em 0 .4em}
+h3{margin:.2em 0}
+.lead{font-size:clamp(16px,1.8vw,20px);color:var(--mut);max-width:780px}
+.grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px}
+.pill{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px;background:var(--soft);color:var(--sf2);margin:2px 4px 2px 0}
+@media (prefers-color-scheme:dark){.pill{color:var(--sf)}}
+.tag-ill{font-size:11px;color:var(--acc);font-weight:700}
+.hint{font-size:12px;color:var(--mut)}
+/* use-case tabs */
+.uctabs{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 16px}
+.uctabs button{font:inherit;text-align:left;flex:1 1 220px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 14px;cursor:pointer;color:var(--tx)}
+.uctabs button small{display:block;color:var(--mut);font-size:12px}
+.uctabs button.on{border-color:var(--sf);box-shadow:0 0 0 2px color-mix(in srgb,var(--sf) 35%,transparent)}
+.ucbody{display:grid;gap:14px;grid-template-columns:minmax(0,1fr) minmax(0,1.35fr)}
+@media (max-width:860px){.ucbody{grid-template-columns:1fr}}
+.kpis{display:flex;gap:10px;flex-wrap:wrap;margin:10px 0}
+.kpi{flex:1 1 120px;background:var(--soft);border-radius:10px;padding:10px}
+.kpi b{display:block;font-size:20px;color:var(--sf2)}
+@media (prefers-color-scheme:dark){.kpi b{color:var(--sf)}}
+.kpi span{font-size:12px;color:var(--mut)}
+ul.tight{margin:6px 0;padding-left:18px}ul.tight li{margin:3px 0}
+/* flow diagram */
+.flow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;position:relative}
+@media (max-width:640px){.flow{grid-template-columns:1fr}}
+.col{border-radius:12px;padding:10px;border:1px dashed var(--line);display:flex;flex-direction:column;gap:6px}
+.col h4{margin:0 0 4px;font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--mut)}
+.col.sf{background:color-mix(in srgb,var(--sf) 10%,transparent);border:1px solid var(--sf)}
+.node{overflow-wrap:anywhere;background:var(--card);border:1px solid var(--line);border-radius:8px;padding:6px 8px;font-size:12.5px;cursor:default;transition:.15s}
+.node em{display:block;font-style:normal;color:var(--mut);font-size:11px}
+.col.sf .node{border-left:3px solid var(--sf)}
+.col.out .node{border-left:3px solid var(--ok)}
+.node:hover,.node.hl{transform:translateY(-1px);box-shadow:0 2px 10px color-mix(in srgb,var(--sf) 40%,transparent)}
+.arrowrow{display:grid;grid-template-columns:repeat(4,1fr);font-size:11px;color:var(--mut);margin-top:6px;text-align:center}
+@media (max-width:640px){.arrowrow{display:none}}
+.steps{counter-reset:s;list-style:none;padding:0;margin:8px 0 0}
+.steps li{counter-increment:s;position:relative;padding:4px 0 4px 30px;font-size:13.5px}
+.steps li::before{content:counter(s);position:absolute;left:0;top:4px;width:20px;height:20px;border-radius:50%;background:var(--sf);color:#fff;font-size:11px;display:grid;place-items:center;font-weight:700}
+/* platform svg-ish layout */
+.layers{display:grid;gap:10px}
+.layer{display:grid;grid-template-columns:150px 1fr;gap:10px;align-items:stretch}
+@media (max-width:640px){.layer{grid-template-columns:1fr}}
+.layer .lbl{font-weight:700;font-size:13px;display:flex;align-items:center;color:var(--mut)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:6px 10px;font-size:13px}
+.layer.core .chips{background:color-mix(in srgb,var(--sf) 10%,transparent);border:1px solid var(--sf);border-radius:12px;padding:8px}
+/* left-to-right architecture */
+.arch{display:grid;grid-template-columns:minmax(0,1fr) 28px minmax(0,.9fr) 28px minmax(0,1.5fr) 28px minmax(0,1fr);align-items:stretch;margin-top:18px}
+.arch .stage{border:1px dashed var(--line);border-radius:12px;padding:10px;display:flex;flex-direction:column;gap:6px;background:var(--card)}
+.arch .stage h4{margin:0 0 2px;font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--mut)}
+.arch .stage.core{border:2px solid var(--sf);background:color-mix(in srgb,var(--sf) 9%,var(--card))}
+.arch .stage.core h4{color:var(--sf)}
+.arch .arr{display:flex;align-items:center;justify-content:center;color:var(--sf);font-size:22px;font-weight:700}
+.arch .chip{font-size:12.5px;padding:5px 8px}
+.arch .chip em{display:block;font-style:normal;font-size:10.5px;color:var(--mut)}
+.arch .grp{font-size:10.5px;font-weight:700;color:var(--mut);margin-top:4px}
+.core-row{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.govband{grid-column:1/-1;margin-top:10px;border-radius:10px;padding:8px 12px;font-size:12.5px;background:var(--soft);border:1px solid var(--line)}
+@media (max-width:860px){.arch{grid-template-columns:1fr}.arch .arr{transform:rotate(90deg);height:28px}}
+/* story cards */
+.badge{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:6px;margin-bottom:6px}
+.badge.named{background:color-mix(in srgb,var(--ok) 18%,transparent);color:var(--ok)}
+.badge.anon{background:color-mix(in srgb,var(--acc) 18%,transparent);color:var(--acc)}
+.badge.x{background:var(--soft);color:var(--sf)}
+.who{font-weight:700;font-size:15px}
+.pl{border-top:1px solid var(--line);margin-top:10px;padding-top:8px}
+blockquote{margin:8px 0;padding:6px 12px;border-left:3px solid var(--sf);color:var(--mut);font-size:13.5px}
+/* Snowflake Intelligence hover demo */
+.si-hot{cursor:help;text-decoration:underline dotted var(--sf);text-underline-offset:3px}
+.si-pop{position:fixed;z-index:50;width:min(380px,92vw);background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:0 12px 40px rgba(0,0,0,.25);overflow:hidden;opacity:0;transform:translateY(6px);transition:opacity .15s,transform .15s;pointer-events:none}
+.si-pop.show{opacity:1;transform:none}
+.si-bar{display:flex;align-items:center;gap:8px;padding:8px 12px;background:linear-gradient(90deg,var(--sf2),var(--sf));color:#fff;font-size:12.5px;font-weight:700}
+.si-bar i{width:8px;height:8px;border-radius:50%;background:#fff;opacity:.85}
+.si-bar span{margin-left:auto;font-weight:400;font-size:10.5px;opacity:.85}
+.si-body{padding:12px;display:flex;flex-direction:column;gap:8px;min-height:230px;font-size:12.5px}
+.si-q{align-self:flex-end;background:var(--sf);color:#fff;border-radius:12px 12px 2px 12px;padding:7px 10px;max-width:88%}
+.si-a{background:var(--soft);border-radius:12px 12px 12px 2px;padding:8px 10px;max-width:96%}
+.si-think{color:var(--mut);font-size:11.5px}
+.si-think b{display:inline-block;animation:sib 1s infinite}
+@keyframes sib{50%{opacity:.2}}
+.si-chart{display:flex;align-items:flex-end;gap:6px;height:70px;margin-top:6px}
+.si-chart div{flex:1;background:var(--sf);border-radius:3px 3px 0 0;height:0;transition:height .6s ease;position:relative}
+.si-chart div em{position:absolute;bottom:-15px;left:0;right:0;text-align:center;font-style:normal;font-size:9.5px;color:var(--mut)}
+.si-src{font-size:10.5px;color:var(--mut);margin-top:16px}
+.si-foot{font-size:10px;color:var(--mut);padding:0 12px 8px}
+.flow.c3,.arrowrow.c3{grid-template-columns:minmax(0,1fr) minmax(0,1.6fr) minmax(0,1fr)}
+@media (max-width:640px){.flow.c3{grid-template-columns:1fr}}
+.vt{display:inline-flex;border:1px solid var(--line);border-radius:999px;padding:3px;gap:2px;margin-bottom:4px;flex-wrap:wrap}
+.vt button{font:inherit;font-size:12.5px;border:0;background:none;color:var(--mut);padding:5px 12px;border-radius:999px;cursor:pointer}
+.vt button.on{background:var(--sf);color:#fff}
+.zone{border-radius:12px;padding:12px;border:2px solid var(--line)}
+.zone.ot{border-color:#c0392b55}.zone.it{border-color:#2e86de55}.zone.sfz{border-color:var(--sf)}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{border-bottom:1px solid var(--line);padding:8px;text-align:left;vertical-align:top}
+.table-wrap{overflow-x:auto}
+.dots{position:fixed;right:12px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:8px;z-index:15}
+.dots button{width:10px;height:10px;border-radius:50%;border:1px solid var(--mut);background:none;padding:0;cursor:pointer}
+.dots button.on{background:var(--sf);border-color:var(--sf)}
+@media (max-width:700px){.dots{display:none}}
+footer{font-size:12px;color:var(--mut);text-align:center;padding:24px}
+</style>
+</head>
+<body>
+<div class="prog" id="prog"></div>
+<nav class="top" id="nav">
+  <span class="brand">PacificLight <b>×</b> Snowflake</span>
+</nav>
+<div class="dots" id="dots"></div>
+
+<!-- COVER -->
+<section class="slide" id="intro" data-label="Overview">
+ <div class="wrap">
+  <div class="kicker">Customer success stories · For internal review by PacificLight</div>
+  <h1>Customer Use Cases Live on Snowflake: Energy Companies and Cross-Industry Examples</h1>
+  <p class="lead">Real-world production use cases from energy companies and other industries that show how Snowflake supports energy use cases and common business functions and operational needs. For each of your three priority business functions, we cover the customer’s challenge, what they built, published results, and how the same approach could apply at PacificLight.</p>
+  <div class="grid" style="margin-top:22px">
+   <div class="card"><span class="pill">01</span><h3>Power Generation &amp; O&amp;M</h3><p class="hint">Expand Energy · Devon Energy · Siemens Energy</p></div>
+   <div class="card"><span class="pill">02</span><h3>Portfolio &amp; Trading</h3><p class="hint">Romande Energie · Flo Energy</p></div>
+   <div class="card"><span class="pill">03</span><h3>Retail &amp; Renewables</h3><p class="hint">EDF · Petrol</p></div>
+   <div class="card"><span class="pill">04</span><h3>Proven in other industries</h3><p class="hint">Zurich · IMCD · Mandai Wildlife Group</p></div>
+  </div>
+  <p class="hint" style="margin-top:18px">How to use this page: scroll, or use the ← → keys. Click a story tab to switch, and hover over any box in a diagram to highlight it. <span class="badge named">Named</span> stories come from published Snowflake and Snowflake-partner customer stories.</p>
+ </div>
+</section>
+
+<!-- PLATFORM -->
+<section class="slide" id="platform" data-label="Platform">
+ <div class="wrap">
+  <div class="kicker">The foundation</div>
+  <h2>The pattern our energy customers run, mapped to PacificLight</h2>
+  <p class="lead">EDF, Expand Energy and Romande Energie all run the same pattern in production. Snowflake is the shared data and AI layer next to their ERP, trading and customer systems, not a replacement for them. Applied to PacificLight, SAP RISE, the Azure front-end and Power BI stay as they are, and Snowflake connects them.</p>
+  <div class="arch">
+   <div class="stage"><h4>1 · Your sources</h4>
+    <div class="grp">Plant (OT · CII)</div><span class="chip">OT historian / DCS<em>on-prem</em></span><span class="chip">CMMS / SAP PM</span>
+    <div class="grp">Enterprise</div><span class="chip">SAP RISE<em>FI/CO · MM · billing</em></span><span class="chip">ETRM / trade blotter</span><span class="chip">Self-built DW</span>
+    <div class="grp">Market &amp; customer</div><span class="chip">EMC (USEP, demand)</span><span class="chip">Azure CRM, quoting &amp; portal</span><span class="chip">Smart-meter data</span><span class="chip">PDFs<em>contracts, OEM manuals</em></span>
+   </div>
+   <div class="arr" aria-hidden="true">→</div>
+   <div class="stage"><h4>2 · Ingest</h4>
+    <span class="chip">Openflow<em>OT DMZ agent · files</em></span><span class="chip">SAP connectors / BDC</span><span class="chip">Snowpipe Streaming</span><span class="chip">Azure Private Link</span><span class="chip">Snowflake Marketplace<em>Live weather, fuel, market data shared in, no pipelines</em></span>
+   </div>
+   <div class="arr" aria-hidden="true">→</div>
+   <div class="stage core"><h4>3 · Snowflake AI Data Cloud</h4>
+    <div class="core-row"><span class="chip">Raw zone<em>OT · SAP · market · CRM</em></span><span class="chip">Dynamic Tables<em>curated, near-real-time</em></span></div>
+    <div class="core-row"><span class="chip">Snowflake ML<em>Build, train and serve forecasting, anomaly-detection and risk models on governed data</em></span><span class="chip">Snowpark<em>Python models &amp; simulations</em></span></div>
+    <div class="core-row"><span class="chip">Cortex AI<em>LLMs that read documents, search knowledge, answer questions and run agents securely</em></span><span class="chip">Semantic views<em>Business context for your data: shared KPI definitions AI understands</em></span></div>
+   </div>
+   <div class="arr" aria-hidden="true">→</div>
+   <div class="stage"><h4>4 · Consume &amp; act</h4>
+    <span class="chip">Power BI<em>existing</em></span><span class="chip">Streamlit apps<em>Asset health, trader scenarios, quote builders, renewal workbenches</em></span><span class="chip">Snowflake Intelligence (CoWork)<em>Query enterprise data in plain English</em></span><span class="chip">Write back<em>CRM · SAP PM</em></span>
+   </div>
+   <div class="govband"><b>Horizon governance across every stage:</b> role-based access, masking, lineage and access history. OT data lives in an isolated, read-only zone (see the OT / CII slide).</div>
+  </div>
+ </div>
+</section>
+
+<section class="slide" id="gen" data-label="Generation"><div class="wrap" data-bu="gen"></div></section>
+<section class="slide" id="portfolio" data-label="Portfolio"><div class="wrap" data-bu="portfolio"></div></section>
+<section class="slide" id="retail" data-label="Retail"><div class="wrap" data-bu="retail"></div></section>
+
+<!-- CROSS-INDUSTRY PARALLELS -->
+<section class="slide" id="parallels" data-label="Other industries"><div class="wrap" data-bu="parallels"></div></section>
+
+<!-- OT SECURITY -->
+<section class="slide" id="otsec" data-label="OT / CII">
+ <div class="wrap">
+  <div class="kicker">Addressing the CII question</div>
+  <h2>OT data reaches analytics without exposing the plant</h2>
+  <p class="lead">Your OT systems stay on-premise. Data only flows outward, one way. No inbound connection ever reaches Level 0–2, and Snowflake never sends commands to the control system.</p>
+  <div class="grid" style="margin-top:14px">
+   <div class="zone ot"><h3>Plant OT zone (on-prem)</h3><ul class="tight"><li>DCS / PLC / sensors (Levels 0–2)</li><li>Plant historian (Level 3)</li><li>Unchanged. Nothing is installed here.</li></ul></div>
+   <div class="zone ot" style="border-style:dashed"><h3>OT DMZ (Level 3.5)</h3><ul class="tight"><li>Historian replica / data diode (one-way)</li><li>Openflow runtime, outbound HTTPS only</li><li>Tag filtering: export only approved tags</li></ul></div>
+   <div class="zone it"><h3>Network path</h3><ul class="tight"><li>Private connectivity (Private Link) to Snowflake</li><li>TLS in transit, network policies, key-pair or OAuth auth</li><li>Customer-managed keys (Tri-Secret Secure) available</li></ul></div>
+   <div class="zone sfz"><h3>Snowflake (region of your choice)</h3><ul class="tight"><li>An isolated OT database, read-only for analytics roles</li><li>Row and column masking; full access history</li><li>Results flow back to engineers, never into the DCS</li></ul></div>
+  </div>
+  <p class="hint" style="margin-top:12px">Your CSA (Cyber Security Agency of Singapore) CII obligations remain PacificLight's to manage. In a workshop, we would map this design against your CII cybersecurity code of practice and internal OT policy before any POC.</p>
+ </div>
+</section>
+
+<!-- MARKETPLACE -->
+<section class="slide" id="marketplace" data-label="Marketplace">
+ <div class="wrap">
+  <div class="kicker">External data with no pipelines to build</div>
+  <h2>Snowflake Marketplace: add outside data to your own models</h2>
+  <p class="lead">Providers share live datasets straight into your account, so there is no FTP and no ETL. They join with your own data immediately, and they drive the price-modelling and load-forecast use cases.</p>
+  <div class="grid" style="margin-top:14px">
+   <div class="card"><span class="pill">Weather</span><p>Historical and forecast temperature, humidity, irradiance and rainfall. These drive load, solar output and gas-turbine ambient derating.</p></div>
+   <div class="card"><span class="pill">Fuel &amp; carbon</span><p>LNG is PacificLight's main fuel, so its benchmark prices matter most. S&amp;P Global publishes Platts LNG data, including the JKM benchmark, on Marketplace, alongside Brent, FX and carbon data. Together these drive fuel cost, spark spread and hedge decisions.</p></div>
+   <div class="card"><span class="pill">Macro &amp; demographic</span><p>Economic indicators, business activity and holiday calendars. These drive C&amp;I demand and churn propensity.</p></div>
+   <div class="card"><span class="pill">Firmographics</span><p>Company size, industry and growth signals. These improve C&amp;I prospecting and credit-risk pricing.</p></div>
+   <div class="card"><span class="pill">Your own feeds</span><p>EMC/USEP data and vendor feeds (e.g. ICE, broker curves) loaded once and shared across teams through governed views.</p></div>
+  </div>
+  <p class="hint" style="margin-top:12px">Which providers cover Singapore varies by dataset. We will send a curated list of current Marketplace listings for PacificLight before the deep dive.</p>
+ </div>
+</section>
+
+<!-- NEXT -->
+<section class="slide" id="next" data-label="Next steps">
+ <div class="wrap">
+  <div class="kicker">The path from here</div>
+  <h2>Pick 1–2 use cases. We will prove the value with your data in weeks.</h2>
+  <div class="table-wrap"><table>
+   <thead><tr><th>Step</th><th>What happens</th><th>Who</th></tr></thead>
+   <tbody>
+    <tr><td>1. Internal review</td><td>PacificLight business heads shortlist 1–2 use cases from this pack</td><td>Dennis + BU heads</td></tr>
+    <tr><td>2. Deep-dive demo (1–2 weeks)</td><td>A working demo tailored to the shortlisted use cases, with sample data, a Streamlit app and Snowflake Intelligence</td><td>Snowflake (Linus, Pei)</td></tr>
+    <tr><td>3. Value workshop</td><td>Agree baselines, success criteria and data access (including an OT/CII design review)</td><td>Joint</td></tr>
+    <tr><td>4. POC (4–6 weeks)</td><td>A trial account, connection of 2–3 sources, a model built and a measurable KPI moved</td><td>Joint, partner optional</td></tr>
+    <tr><td>5. Business case</td><td>ROI, rollout plan and the next use cases, reusing the same foundation</td><td>Joint</td></tr>
+   </tbody></table></div>
+  <p class="card" style="margin-top:16px;font-size:clamp(16px,1.6vw,19px);line-height:1.55;border-left:4px solid var(--sf)">Suggested quick-win POCs (low data friction, high visibility): <b>USEP price modelling with Marketplace data</b> (the Romande Energie pattern) or <b>Customer 360 + renewal risk</b> (the EDF pattern). Both run on IT-side data only, so there is no CII dependency to start.</p>
+ </div>
+</section>
+<footer>Prepared by Snowflake for PacificLight · Customer stories from published Snowflake and partner case studies · Results as published by each customer</footer>
+
+<script>
+const BU = {
+ gen:{kicker:"01 · Power Generation & O&M",title:"Run the plant more reliably, for less fuel",
+  lead:"Energy producers already run Snowflake in production to bring OT, maintenance and engineering data together. Here is what they built and what it would look like for PacificLight.",
+  uc:[
+  {name:"Expand Energy",sub:"OT + IoT unification, predictive operations",badge:"named",seg:"Largest US natural-gas producer · 3,700 production sites",
+   problem:"OT, financial and IoT data was split across Hadoop and SAP HANA silos, which slowed engineering analysis and M&A integration.",
+   built:["One platform for OT, IoT and financial data across 3,700 sites and 1.2M ownership records","ML forecasting in Snowpark, automated monitoring, and a digital twin of every site","Cortex Analyst for self-service questions, with role-based access and DevOps for governance"],
+   kpis:[["40%","faster M&A integration"],["1,000+","hours saved per year"],["Lower","infrastructure cost"]],
+   pl:"Stream approved historian tags out of the OT DMZ, and build a health score and anomaly alerts for each GT, ST and HRSG. Alerts become draft SAP PM work orders.",
+   flow:{src:[["Plant historian","1–10s tag data"],["CMMS / SAP PM","work orders, failures"],["OEM limits","design envelopes"]],ing:[["Openflow in OT DMZ","one-way, filtered tags"],["SAP connector","PM notifications"]],sf:[["Dynamic Tables","1-min resampled features"],["Snowflake ML","anomaly + forecasting"],["Model Registry","versioned, monitored"]],out:[["Asset health app","Streamlit"],["Draft work orders","to SAP PM"],["Power BI fleet view",""]]},
+   steps:["Openflow streams approved tags out of the OT DMZ","Dynamic Tables resample the readings and add operating context","Models learn normal behaviour per asset and score live data","Alerts, with the tags that drove them, trigger draft work orders"]},
+  {name:"Devon Energy",sub:"Physics + data: calculated 'virtual sensors'",badge:"named",seg:"US oil & gas producer · 5,000+ wells",
+   problem:"Calculating bottomhole pressure by hand for more than 5,000 wells did not scale, and fitting a US$50,000 physical sensor to every well was uneconomic.",
+   built:["A data hub on Snowflake that brings together 30+ sources, including SAP ERP","Engineering partner Whitson's models run on that shared data to calculate pressure automatically","Shared securely with SaaS vendors, with no copies of the data"],
+   kpis:[["5,000+","wells calculated automatically"],["95%","of the organisation's data now accessible"],["No","new physical sensors needed"]],
+   pl:"Use the same pattern for heat rate. Calculate actual versus expected heat rate every interval from historian, fuel and Marketplace weather data, then attribute losses to fouling, part load or ambient conditions so you can time water washes.",
+   flow:{src:[["Historian","fuel flow, MW, ambient"],["Fuel invoices","SAP MM / FI"],["Marketplace weather","temp / humidity"]],ing:[["Openflow","OT DMZ"],["SAP connector",""],["Data share","no pipeline"]],sf:[["Performance model","Snowpark / ML"],["Loss attribution","Python"],["Cortex Analyst","'why did heat rate rise?'"]],out:[["Efficiency dashboard","Power BI"],["Wash schedule",""],["Dispatch cost curve","to Portfolio"]]},
+   steps:["Join fuel, output and ambient data each interval","An expected-performance model sets the baseline","The gaps are attributed to recoverable and non-recoverable causes","The results feed O&M plans and the trading cost curve"]},
+  {name:"Siemens Energy",sub:"Engineering documents become AI-searchable knowledge",badge:"named",seg:"Global energy technology & OEM",
+   problem:"Decades of engineering know-how sat in paper and PDF documents that were hard to search.",
+   built:["Documents parsed and indexed in Snowflake","Engineers ask questions in natural language through Cortex AI","Answers are grounded in the company's own governed content"],
+   kpis:[["Paper → AI","searchable engineering knowledge"],["Governed","inside the Snowflake perimeter"]],
+   pl:"Build an O&M copilot. Index OEM manuals, SOPs, RCAs and shift logs, so engineers get answers that cite the exact page. AI_CLASSIFY turns free-text logs into failure-mode data.",
+   flow:{src:[["OEM manuals / SOPs","PDF"],["RCA reports","Word / PDF"],["Shift logs & WO text","SAP PM"]],ing:[["Stage + Openflow","file ingest"],["SAP connector",""]],sf:[["AI_PARSE_DOCUMENT","layout-aware"],["Cortex Search","hybrid retrieval"],["Cortex Agent","docs + SQL"]],out:[["Snowflake Intelligence","chat for engineers"],["Teams / mobile",""],["Failure-mode tables",""]]},
+   steps:["Documents are parsed and split into chunks","Search indexes them, with access controlled by role","The agent answers with citations and can also query work orders","Logs are classified into failure modes"]}
+ ]},
+ portfolio:{kicker:"02 · Portfolio & Trading",title:"Give traders and analysts one trusted view of market and position",
+  lead:"Energy companies trading in volatile markets use Snowflake to combine their own production and consumption data with third-party market data. Hedge position and risk optimisation can be built together in a POC on the same foundation.",
+  uc:[
+  {name:"Romande Energie",sub:"Trader data for purchase decisions",badge:"named",seg:"Swiss integrated utility",
+   problem:"Traders and asset teams could not easily combine production, consumption and third-party market data.",
+   built:["Production, consumption and third-party data in one place, so traders can make purchase decisions","The same platform is used to prioritise asset maintenance, network engineering and the smart-meter rollout","Zero-Copy Cloning for safe development, delivered with Snowflake Professional Services"],
+   kpis:[["40%","lower solution costs"],["1 platform","for trading and asset teams"]],
+   pl:"Build USEP price modelling. Combine EMC history with Marketplace weather, LNG/JKM, FX and carbon data to forecast half-hourly USEP with P10/P50/P90 bands, and let traders run what-if scenarios. Retail pricing uses the same curve.",
+   flow:{src:[["EMC market data","USEP, demand, reserves"],["Marketplace","weather, fuel, FX, carbon"],["Plant availability","from Gen team"]],ing:[["Scheduled load / API","EMC files"],["Data shares","live, zero-ETL"],["Internal share",""]],sf:[["Feature Store","lags, calendar, spreads"],["Snowflake ML","forecast models"],["Scenario engine","Snowpark Python"]],out:[["Trader app","Streamlit"],["Forward curve","to ETRM / Power BI"],["Retail price floor","to Retail"]]},
+   steps:["Marketplace data joins EMC history, with no pipelines","Features are versioned in the Feature Store","Models produce P10/P50/P90 forecasts every half-hour","Traders run scenarios, and the curve is shared with Retail"]},
+  {name:"Flo Energy",sub:"Flex & trading analytics, self-service",badge:"named",seg:"Singapore-based renewable energy & flexibility provider · story published by Snowflake partner Holistics",
+   problem:"Many dashboards were Excel sheets that people had to run by hand every day. They were written by individuals, not version-controlled, and hard to collaborate on or scale.",
+   quote:["A lot of these dashboards used to be Excel sheets that people had to manually run every day. With Holistics, you win all that time back. It's also more accurate because we have to build a version controlled dbt solution for it instead of non-version controlled queries in Excel written by one person.","Nils T., Head of Data & Analytics, Flo Energy"],
+   built:["Snowflake as the core platform, with dbt for transformation and Dagster for orchestration","A governed semantic layer and self-service BI for trading, flexibility and operations teams","One definition of each metric, used across the company"],
+   kpis:[["Self-service","business users build & modify their own reports"],["Version-controlled","dbt logic replaces one-person Excel queries"],["RBAC","dashboards restricted by team, incl. new Australian market"],["Usage monitoring","see which insights reach people"]],
+   pl:"Build a self-service hedge cockpit. PacificLight's CCGTs run on LNG, so the margin it hedges is the spark spread: USEP against JKM-linked fuel cost. Combine forecast retail load, generation, the hedge book (futures, swaps, options) and Platts LNG/JKM prices from Snowflake Marketplace. Traders then see the net open position, spark spread and hedge cover by delivery period, and can test what happens if JKM moves.",
+   flow:{src:[["Retail load","smart-meter + CRM contracts"],["Hedge book","ETRM: futures, swaps, options"],["LNG contracts & fuel cost","SAP MM / FI"],["Platts LNG / JKM, Brent","S&P Global via Marketplace"],["EMC USEP & demand",""]],ing:[["Snowpipe / Openflow","meter & ETRM"],["SAP connector","fuel cost"],["Marketplace share","live Platts data, no pipelines"]],sf:[["Load forecast","Snowflake ML, per segment"],["Spark-spread model","USEP vs JKM-linked fuel cost"],["Position & hedge cover","Dynamic Tables by delivery period"],["Semantic views","hedge ratio, open position, MtM"]],out:[["Hedge cockpit","Streamlit: JKM what-ifs"],["Hedge-ratio alerts","vs risk policy"],["Snowflake Intelligence","'How much Q2 is unhedged?'"]]},
+   steps:["Forecast retail load per segment and add contracted volumes","Platts JKM and Brent prices arrive by Marketplace share and are joined to PacificLight's LNG contract terms to give the fuel cost per MWh","Net load, generation and hedges roll up to the open position and spark spread by delivery period","Traders test JKM and USEP scenarios and check hedge cover against policy, in the app or in plain English"]}
+ ]},
+ retail:{kicker:"03 · Retail & Renewables",title:"Know every customer, act before renewal",
+  lead:"Energy retailers in competitive markets already run Customer 360 and segmentation on Snowflake. For the quotation and contract patterns, see the Zurich and IMCD parallels on slide 04.",
+  uc:[
+  {name:"EDF",sub:"Intelligent Customer Engine: Customer 360",badge:"named",seg:"UK energy supplier, millions of customers",
+   problem:"Customer data was fragmented, and putting ML models into production took months.",
+   built:["A central customer data platform: the Intelligent Customer Engine (ICE)","Data scientists build in Python with Snowpark, with MLOps through the AWS SageMaker integration","Models identify customers who need support, such as those in financial vulnerability, and improve customer care"],
+   kpis:[["Months, not years","to build the platform"],["Weeks","to ship new data products"],["4×","faster data-product development"]],
+   pl:"Build Customer 360 and renewal intelligence. Match the Azure CRM, SAP billing, meter data and service tickets into one golden customer record, score renewal risk 90+ days out, and write the next best offer back into the CRM.",
+   flow:{src:[["Azure CRM & portal","accounts, leads"],["SAP billing","invoices, payments"],["Meter data","load profile"],["Tickets & emails","text"]],ing:[["Private Link","Azure"],["SAP connector / BDC",""],["Openflow",""]],sf:[["Identity resolution","golden record"],["Churn & next-best-offer models","Snowflake ML"],["AI_SENTIMENT / AI_SUMMARIZE","service text"]],out:[["CRM write-back","scores & next action"],["Account brief","Snowflake Intelligence"],["Campaign lists",""]]},
+   steps:["Records are matched into a golden customer profile","Features combine load shape, billing and service history","Models score renewal risk and recommend an offer","Scores and summaries are written back to the CRM"]},
+  {name:"Petrol",sub:"Customer segmentation on Snowflake on Azure",badge:"named",seg:"Slovenian energy company · 500 service stations across south-eastern Europe · story published by Snowflake partner In516ht",
+   problem:"A newly installed on-premises data warehouse did not deliver. Queries took hours or days, needed constant tuning and indexing, and slowed customer segmentation as new entrants came into the market.",
+   built:["Migrated to Snowflake on Microsoft Azure in about four months, with In516ht's DataMerlin automation","A central platform giving departments live and historical data for analytics and predictions","Faster customer segmentation and analysis, used to build more customer-centric products"],
+   kpis:[["~40%","lower total cost of ownership"],["80%","less administrative work"],["Hours → seconds","query times; ~98% need no tuning"]],
+   quote:["With Snowflake, we don't have to worry about speed, tuning, or space. We get the performance we need, when we need it. Finally, we have instant access to any data we need for reliable reports, analytics, and predictions.","Amir Komic, Data Warehouse Architect, Petrol d.d."],
+   pl:"Segment mass-market and SME customers by load shape, tenure and payment behaviour. Target green plans and solar offers, and measure the uplift from each campaign.",
+   flow:{src:[["Azure CRM","customers"],["SAP billing",""],["Campaign responses",""]],ing:[["Private Link","Azure"],["SAP connector",""]],sf:[["Segmentation","Snowflake ML"],["Campaign uplift","Dynamic Tables"]],out:[["Campaign lists","to CRM"],["Power BI",""]]},
+   steps:["Customer and billing data land on Azure-hosted Snowflake","Segments are built and refreshed","Campaigns are targeted by segment","Uplift is measured and fed back into the models"]}
+ ]},
+ parallels:{kicker:"04 · Proven in other industries",title:"Same building blocks, already live at other Snowflake customers",
+  lead:"Some of PacificLight's priorities do not yet have a published energy-sector story. These customers solved the same shape of problem in other industries, using the same Snowflake capabilities shown in this pack.",
+  uc:[
+  {name:"Zurich",sub:"For PacificLight: Retail & Renewables · Portfolio",badge:"x",ind:"Insurance · named customer story",seg:"Global insurer",
+   problem:"Pricing and underwriting relied on asking customers many questions, with limited objective data on each property's real risk.",
+   built:["External lidar data on the exact height of every building and its surroundings, brought into Snowflake","Algorithms that turn that data into property-level risk analysis","Risk-based, more transparent pricing, with ML models deployed in Snowflake"],
+   kpis:[["Fewer","questions at quote & onboarding"],["Transparent","risk-based pricing"],["Automated","underwriting steps"]],
+   pl:"Build risk-based C&I quotation (Retail & Renewables). Price each quote on the customer's own load shape against the forward curve (Portfolio), add premiums for shape, volume tolerance and credit using Marketplace firmographic data, and return a quote in minutes.",
+   flow:{src:[["Customer interval data","or sector proxy profiles"],["Forward curve","from Portfolio"],["Marketplace","firmographic / credit"]],ing:[["Portal upload",""],["Internal share",""],["Data share","no pipeline"]],sf:[["Shape-cost calc","Snowpark UDFs"],["Risk premium model","Snowflake ML"],["Quote history","win/loss analytics"]],out:[["Quote app","Streamlit / CRM"],["Approval workflow",""],["Pricing dashboard","Power BI"]]},
+   steps:["Upload or estimate the customer's load profile","Price it against the shared forward curve","Apply premiums for shape, volume and credit","Approve, send, and learn from each win or loss"]},
+  {name:"IMCD",sub:"For PacificLight: Retail & Renewables · Generation & O&M",badge:"x",ind:"Chemicals distribution · named customer story",seg:"Global specialty-chemicals distributor",
+   problem:"Complex technical and regulatory documents mixed text, tables and diagrams, which made them hard to analyse consistently.",
+   built:["Unstructured data extracted from documents into Snowflake","AI models grounded in that trusted data, to cut the risk of hallucination","A generative-AI document search and a SalesAssistant on its website and B2B portal"],
+   kpis:[["Grounded","AI on trusted document data"],["Countless","person-hours of manual rewriting saved"],["New","upsell & cross-sell paths"]],
+   pl:"Build contract & renewables intelligence (Retail & Renewables). Use AI_EXTRACT to turn C&I contracts and PPAs into a searchable register of tenor, price adjustments, volume bands and REC commitments, with expiry alerts that feed the Portfolio load book. The same approach works for OEM manuals (Generation & O&M).",
+   flow:{src:[["Contract PDFs","C&I, PPAs"],["REC registry exports",""],["Solar generation","rooftop / farm"]],ing:[["SharePoint via Openflow",""],["File load",""],["Openflow / IoT",""]],sf:[["AI_EXTRACT","terms to tables"],["AI_CLASSIFY","clause risk"],["Cortex Search","ask the contracts"]],out:[["Contract register","searchable"],["Expiry & risk alerts",""],["Feeds load book","Portfolio"]]},
+   steps:["Contracts land in a stage","AI_EXTRACT pulls terms into structured tables","Clauses are classified and risky ones flagged","The register feeds the portfolio book and the green ledger"]},
+  {name:"Mandai Wildlife Group",sub:"For PacificLight: all three functions + HR / Finance / BI",badge:"x",ind:"Singapore · Wildlife & conservation · named customer story",seg:"Steward of Singapore Zoo, Night Safari, Bird Paradise and more · 20,000 animals",
+   problem:"Husbandry, veterinary, nutrition and genealogy records were spread across several systems, so keepers searched page by page.",
+   built:["Animal 360, built with partner Infinite Lambda: more than 600,000 notes unified in Snowflake","An agent built on Cortex AI and a semantic layer, so keepers and vets ask questions in plain English, on mobile","Answers are grounded in governed records, and staff apply their own professional judgement. A separate Business 360 serves the commercial side"],
+   kpis:[["~30 s","to find what used to take page-by-page searching"],["600k+","notes searchable"],["2026","Snowflake APJ Data Drivers Award"]],
+   pl:"Build one governed, plain-English way into PacificLight's data. Engineers can ask about asset history (Generation & O&M), traders about positions (Portfolio), account managers about customers (Retail & Renewables), and HR and Finance about headcount, policies and cost centres across SAP RISE and internal documents.",
+   flow:{src:[["SAP RISE","FI/CO, HR"],["Policies & documents","SharePoint / PDF"],["Curated data","from each function"]],ing:[["SAP connector / BDC",""],["Openflow","files"]],sf:[["Semantic views","one definition of each KPI"],["Cortex Search","documents"],["Cortex Agent","SQL + documents"]],out:[["Snowflake Intelligence","chat, incl. mobile"],["Teams",""],["Power BI",""]]},
+   steps:["Data from each function is curated and governed by role","Semantic views define each KPI once","The agent answers from both data and documents, with citations","Staff ask in plain English, on desktop or mobile"]}
+ ]}
+};
+// Customer blueprints: only components named in each customer's published story
+const CFLOW={
+ "Expand Energy":{src:[["Hadoop data lake","legacy"],["SAP HANA","financial"],["OT & IoT data","3,700 sites"]],sf:[["One platform replaces Hadoop & SAP HANA silos","warehouse + big-data workloads together"],["Snowpark ML forecasting","production & operations"],["Automated monitoring","digital twin of every site"],["Cortex Analyst","engineers ask in natural language"],["RBAC + DevOps","governed, regulator-ready"]],out:[["Self-service engineers","no IT queue"],["M&A integration","40% faster"]],steps:["OT, IoT and financial data are consolidated off Hadoop and SAP HANA","Snowpark runs ML forecasting and automated monitoring","A digital twin of every site is maintained","Engineers self-serve, including through Cortex Analyst"]},
+ "Devon Energy":{src:[["30+ sources","incl. SAP ERP"],["Well & production data","5,000+ wells"]],sf:[["Data Hub","30+ sources incl. SAP ERP consolidated"],["Democratised access","95% of the organisation's data"],["Partner models on shared data","Whitson bottomhole-pressure calculations"],["Secure data sharing","with SaaS vendors, no copies"]],out:[["Automated pressure","no US$50k sensors"],["Secure sharing","with SaaS vendors"],["Rig & site decisions",""]]},
+ "Siemens Energy":{src:[["Paper & PDF documents","engineering know-how"]],sf:[["Cortex AI document understanding","paper & PDF to searchable knowledge"],["Natural-language Q&A","for engineers"],["Governed","inside the Snowflake perimeter"]],out:[["AI-searchable knowledge","for engineers"]]},
+ "Romande Energie":{src:[["Production data",""],["Consumption data",""],["Third-party data","market"]],sf:[["Unified data platform","production, consumption & third-party data"],["Trading analytics","inputs to purchase decisions"],["Asset & network analytics","maintenance, engineering, smart-meter rollout"],["Zero-Copy Cloning","safe dev & test environments"],["Delivered with Snowflake Professional Services",""]],out:[["Trader purchase decisions",""],["Maintenance prioritisation",""],["Network & smart-meter planning",""]]},
+ "Flo Energy":{src:[["Trading, flex & operational data",""]],sf:[["Snowflake core platform","single source of truth"],["dbt","modelled, tested transformations"],["Dagster","pipeline orchestration"],["Governed semantic layer","one definition of each metric"]],out:[["Self-service reports","replace manual daily Excel runs"],["Secure sharing","password links + RBAC by team"],["Usage monitoring","focus on what's used"]]},
+ "EDF":{src:[["Customer data","previously fragmented"]],sf:[["Intelligent Customer Engine","central customer data platform"],["Snowpark","data scientists build in Python"],["AWS SageMaker integration","enterprise MLOps"],["Governed self-service analytics","across teams"]],out:[["AWS SageMaker","MLOps"],["Customer-care models","e.g. vulnerability"],["New data products","in weeks"]]},
+ "Petrol":{src:[["On-prem data warehouse","legacy, slow queries"],["Customer & retail data","500 service stations"]],sf:[["Snowflake on Azure","migrated in ~4 months with In516ht DataMerlin"],["Central data platform","live + historical data for all departments"],["Elastic scaling","no tuning for ~98% of queries"],["Customer segmentation & analysis","accelerated"]],out:[["Customer-centric products","compete with new entrants"],["~40% lower TCO","80% less admin"],["No traditional DBAs","BI team runs the platform"]]},
+ "Zurich":{src:[["External lidar data","building heights"],["Policy & quote data",""]],sf:[["External lidar data","height of every building & surroundings"],["Risk algorithms","e.g. tree-fall risk, flat-roof degradation"],["ML model layer","being built in Snowflake"]],out:[["Risk-based pricing","transparent"],["Fewer quote questions",""],["Underwriting automation",""]]},
+ "IMCD":{src:[["Technical & regulatory docs","text, tables, diagrams"],["Ordering, finance, logistics","structured"]],sf:[["Unstructured extraction","text, tables, diagrams from documents"],["Grounded AI","trusted data reduces hallucination"],["Generative AI document search",""],["SalesAssistant","recommendation engine for upsell & cross-sell"]],out:[["AI document search","website & B2B portal"],["SalesAssistant","recommendations"],["Product descriptions",""]]},
+ "Mandai Wildlife Group":{src:[["Husbandry & vet records",""],["Nutrition & genealogy",""],["600k+ keeper notes",""]],sf:[["Unified records","built with partner Infinite Lambda"],["Semantic layer","answers grounded in governed records"],["Cortex AI + LLMs","Animal 360 agent"],["Snowflake Intelligence (CoWork)","natural-language chat, mobile"]],out:[["Snowflake Intelligence","natural-language chat"],["Mobile access","iPhone"]],steps:["Records from several systems are unified in Snowflake","A semantic layer grounds every answer in governed data","Keepers and vets ask in natural language, on mobile","Staff apply their own professional judgement to the answer"]}
+};
+
+function el(t,c,h){const e=document.createElement(t);if(c)e.className=c;if(h!=null)e.innerHTML=h;return e;}
+function esc(s){return String(s).replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]));}
+
+function renderUC(box,u){
+ const nodes=(arr)=>arr.map(n=>`<div class="node">${esc(n[0]).replace(/_/g,"_<wbr>")}${n[1]?`<em>${esc(n[1])}</em>`:""}</div>`).join("");
+ const bl=u.badge==="named"?"Named customer story":u.badge==="x"?u.ind:"Live customer · anonymised";
+ box.innerHTML=`<div class="card">
+   <span class="badge ${u.badge}">${bl}</span>
+   <h3>${esc(u.name)}</h3><p class="hint" style="margin-top:0">${esc(u.seg)}</p>
+   <p><b>The challenge.</b> ${esc(u.problem)}</p>
+   <p style="margin-bottom:2px"><b>What they built</b></p><ul class="tight">${u.built.map(w=>`<li>${esc(w)}</li>`).join("")}</ul>
+   <p style="margin-bottom:0"><b>Published results</b></p>
+   <div class="kpis">${u.kpis.map(k=>`<div class="kpi"><b>${esc(k[0])}</b><span>${esc(k[1])}</span></div>`).join("")}</div>
+   <p class="pl"><b>At PacificLight:</b> ${esc(u.pl)}</p></div>
+  <div class="card"><div class="vt"><button data-v="c">Customer blueprint</button><button data-v="p">How it would run at PacificLight</button></div><div class="vbody"></div></div>`;
+ const cfg=CFLOW[u.name],vb=box.querySelector(".vbody"),vt=box.querySelector(".vt");
+ const lab=["Data sources","Ingest","Inside Snowflake","Outcome"];
+ function view(v){
+  const f=v==="c"?cfg:u.flow,st=v==="c"?(cfg.steps||[]):u.steps;
+  vt.querySelectorAll("button").forEach(x=>x.classList.toggle("on",x.dataset.v===v));
+  vb.innerHTML=`<p class="hint" style="margin:4px 0 8px">${v==="c"?`Based on ${esc(u.name)}'s published story. Only components named in it are shown.`:"Proposed pattern for PacificLight, using your systems."}</p>
+   <div class="flow${v==="c"?" c3":""}">
+    <div class="col"><h4>${lab[0]}</h4>${nodes(f.src)}</div>
+    ${v==="c"?"":`<div class="col"><h4>${lab[1]}</h4>${nodes(f.ing)}</div>`}
+    <div class="col sf"><h4>${lab[2]}</h4>${nodes(f.sf)}</div>
+    <div class="col out"><h4>${v==="c"?"Results":lab[3]}</h4>${nodes(f.out)}</div>
+   </div>
+   <div class="arrowrow${v==="c"?" c3":""}">${v==="c"?"<span>collect →</span><span>model & AI →</span><span>results</span>":"<span>collect →</span><span>land →</span><span>model & AI →</span><span>act</span>"}</div>
+   ${st.length?`<ol class="steps">${st.map(x=>`<li>${esc(x)}</li>`).join("")}</ol>`:""}
+   ${v==="c"&&u.quote?`<blockquote>“${esc(u.quote[0])}”<br><b>${esc(u.quote[1])}</b></blockquote>`:""}`;
+ }
+ if(!cfg)vt.querySelector('[data-v="c"]').remove();
+ vt.querySelectorAll("button").forEach(x=>x.addEventListener("click",()=>view(x.dataset.v)));
+ view(cfg?"c":"p");
+ box.querySelectorAll(".flow").forEach(f=>{
+  f.addEventListener("mouseover",e=>{const n=e.target.closest(".node");if(n)n.classList.add("hl");});
+  f.addEventListener("mouseout",e=>{const n=e.target.closest(".node");if(n)n.classList.remove("hl");});
+ });
+}
+
+document.querySelectorAll("[data-bu]").forEach(w=>{
+ const b=BU[w.dataset.bu];
+ w.append(el("div","kicker",esc(b.kicker)),el("h2",null,esc(b.title)),el("p","lead",esc(b.lead)));
+ const tabs=el("div","uctabs"),body=el("div","ucbody");
+ b.uc.forEach((u,i)=>{
+  const t=el("button",i?"":"on",`${esc(u.name)}<small>${esc(u.sub)}</small>`);
+  t.addEventListener("click",()=>{tabs.querySelectorAll("button").forEach(x=>x.classList.remove("on"));t.classList.add("on");renderUC(body,u);});
+  tabs.append(t);
+ });
+ w.append(tabs,body);renderUC(body,b.uc[0]);
+});
+
+// nav + dots
+const secs=[...document.querySelectorAll("section.slide")],nav=document.getElementById("nav"),dots=document.getElementById("dots");
+const navBtns=[],dotBtns=[];
+secs.forEach((s,i)=>{
+ const go=()=>s.scrollIntoView({behavior:"smooth"});
+ const b=el("button",null,esc(s.dataset.label));b.addEventListener("click",go);nav.append(b);navBtns.push(b);
+ const d=el("button");d.title=s.dataset.label;d.addEventListener("click",go);dots.append(d);dotBtns.push(d);
+});
+let cur=0;
+function update(){
+ const y=window.scrollY+window.innerHeight*0.4;let idx=0;
+ secs.forEach((s,i)=>{if(s.offsetTop<=y)idx=i;});cur=idx;
+ navBtns.forEach((b,i)=>b.classList.toggle("on",i===idx));dotBtns.forEach((b,i)=>b.classList.toggle("on",i===idx));
+ const h=document.documentElement.scrollHeight-window.innerHeight;document.getElementById("prog").style.width=(h>0?window.scrollY/h*100:0)+"%";
+}
+window.addEventListener("scroll",update,{passive:true});update();
+document.addEventListener("keydown",e=>{
+ if(e.target.tagName==="INPUT")return;
+ if(e.key==="ArrowRight"||e.key==="PageDown"){e.preventDefault();secs[Math.min(cur+1,secs.length-1)].scrollIntoView({behavior:"smooth"});}
+ if(e.key==="ArrowLeft"||e.key==="PageUp"){e.preventDefault();secs[Math.max(cur-1,0)].scrollIntoView({behavior:"smooth"});}
+});
+
+
+// Snowflake Intelligence hover demo (illustrative mock-up)
+const SI={
+ platform:{q:"Which business unit had the most data questions answered this month?",a:"Across all functions, 1,240 questions were answered. Retail asked the most.",bars:[["Gen",28],["Port",22],["Retail",38],["HR/Fin",12]],src:"Semantic view: usage_metrics"},
+ gen:{q:"Which gas turbines have the highest anomaly scores this week?",a:"GT-2 is trending above its normal envelope: exhaust temperature spread is up 14% and bearing vibration is rising. A draft work order is ready in SAP PM.",bars:[["GT-1",22],["GT-2",78],["GT-3",31],["ST-1",18]],src:"asset_health · OEM manual p.142"},
+ portfolio:{q:"What's our net open position for Q2 if JKM rises 20%?",a:"Q2 is 6% under-hedged at P50. With JKM up 20%, the P90 exposure widens in the evening peak. Consider adding swaps for May to June.",bars:[["Apr",35],["May",62],["Jun",70],["Jul",40]],src:"position_book · usep_forecast"},
+ retail:{q:"Which C&I accounts renewing in the next 90 days are at risk?",a:"18 accounts are flagged. The top drivers are recent price complaints and a load profile that has moved towards solar. A green-plan offer is recommended for 11 of them.",bars:[["Low",30],["Med",45],["High",25]],src:"customer_360 · renewal_scores"},
+ parallels:{q:"How many FTEs are in Finance, and what is the leave policy for shift engineers?",a:"Finance has 42 FTEs (SAP HR, as of this month). Shift engineers accrue 18 days a year, plus 2 for rotating rosters (HR Policy v3.2, s.4.1).",bars:[["Fin",42],["Ops",120],["Retail",65],["Trading",18]],src:"SAP RISE HR · HR Policy PDF"}
+};
+const pop=el("div","si-pop");pop.setAttribute("aria-hidden","true");document.body.append(pop);
+let siTimers=[],siEl=null;
+function siClear(){siTimers.forEach(clearTimeout);siTimers=[];}
+function siAt(ms,fn){siTimers.push(setTimeout(fn,ms));}
+function siPlay(ctx){
+ const d=SI[ctx]||SI.platform;siClear();
+ pop.innerHTML=`<div class="si-bar"><i></i>Snowflake Intelligence<span>Illustrative mock-up</span></div><div class="si-body"><div class="si-q"></div></div><div class="si-foot">Answers grounded in governed PacificLight data, with sources cited</div>`;
+ const body=pop.querySelector(".si-body"),q=pop.querySelector(".si-q");
+ [...d.q].forEach((c,i)=>siAt(i*22,()=>{q.textContent+=c;}));
+ const t0=d.q.length*22+250;
+ siAt(t0,()=>{body.append(el("div","si-think","Thinking: querying semantic views and searching documents <b>•••</b>"));});
+ siAt(t0+1300,()=>{
+  body.querySelector(".si-think").remove();
+  const a=el("div","si-a");const txt=el("div");a.append(txt);body.append(a);
+  const words=d.a.split(" ");words.forEach((w,i)=>siAt(i*45,()=>{txt.textContent+=(i?" ":"")+w;}));
+  siAt(words.length*45+150,()=>{
+   const ch=el("div","si-chart");const mx=Math.max(...d.bars.map(b=>b[1]));
+   d.bars.forEach(b=>ch.append(el("div",null,`<em>${esc(b[0])}</em>`)));a.append(ch);
+   requestAnimationFrame(()=>requestAnimationFrame(()=>ch.querySelectorAll("div").forEach((x,i)=>x.style.height=(d.bars[i][1]/mx*100)+"%")));
+   a.append(el("div","si-src","Sources: "+esc(d.src)));
+  });
+ });
+}
+function siPlace(t){
+ const r=t.getBoundingClientRect(),w=pop.offsetWidth||380,h=pop.offsetHeight||320;
+ let x=Math.min(Math.max(8,r.left),window.innerWidth-w-8);
+ let y=r.bottom+8;if(y+h>window.innerHeight-8)y=Math.max(8,r.top-h-8);
+ pop.style.left=x+"px";pop.style.top=y+"px";
+}
+function siMark(){document.querySelectorAll(".chip,.node").forEach(n=>{if(n.textContent.includes("Snowflake Intelligence"))n.classList.add("si-hot");});}
+siMark();new MutationObserver(siMark).observe(document.body,{childList:true,subtree:true});
+document.addEventListener("mouseover",e=>{
+ const t=e.target.closest&&e.target.closest(".si-hot");if(!t||t===siEl)return;
+ siEl=t;const sec=t.closest("section");siPlay(sec?sec.id:"platform");pop.classList.add("show");siPlace(t);
+});
+document.addEventListener("mouseout",e=>{
+ const t=e.target.closest&&e.target.closest(".si-hot");if(!t||(e.relatedTarget&&t.contains(e.relatedTarget)))return;
+ siEl=null;siClear();pop.classList.remove("show");
+});
+</script>
+</body>
+</html>
